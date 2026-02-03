@@ -9,6 +9,8 @@ CryptoDash é uma SPA sem frameworks que acompanha o mercado de criptoativos com
 - Dashboard com cards, estatísticas globais e gráfico de preço
 - Mercado com busca em tempo real e paginação
 - Carteira com persistência local e gráfico de alocação
+- Alertas salvos localmente com indicador de disparo
+- Configurações com moeda padrão e reset de dados
 - Modo Mock automático quando a API falha
 
 ## Tecnologias

@@ -12,46 +12,51 @@
       rel="stylesheet"
     />
     <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+    <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2300f5a0'/%3E%3Cstop offset='1' stop-color='%235f6bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='28' fill='url(%23g)'/%3E%3Cpath d='M22 34c6-2 8-10 12-14 3-3 6 0 4 3-3 5-6 11-12 15-4 3-8 2-10-4-1-2 2-0 6 0z' fill='%230b0f1e'/%3E%3C/svg%3E"
     />
   </head>
   <body>
     <div class="app">
       <aside class="sidebar">
         <div class="brand">
-          <div class="brand-icon">₿</div>
+          <div class="brand-icon logo-mark" aria-hidden="true"></div>
           <div class="brand-text">
             <span class="brand-title">CryptoDash</span>
             <span class="brand-subtitle">Portfolio</span>
           </div>
         </div>
         <nav class="nav">
-          <a class="nav-item active" href="#dashboard" data-view="view-dashboard">Dashboard</a>
-          <a class="nav-item" href="#mercado" data-view="view-market">Mercado</a>
-          <a class="nav-item" href="#carteira" data-view="view-wallet">Carteira</a>
-          <a class="nav-item" href="#alertas">Alertas</a>
-          <a class="nav-item" href="#configuracoes">Configurações</a>
+          <a class="nav-item active" href="#dashboard" data-view="view-dashboard">
+            <span class="nav-icon"><i class="ph ph-squares-four"></i></span>
+            <span class="nav-label">Dashboard</span>
+          </a>
+          <a class="nav-item" href="#mercado" data-view="view-market">
+            <span class="nav-icon"><i class="ph ph-chart-line-up"></i></span>
+            <span class="nav-label">Mercado</span>
+          </a>
+          <a class="nav-item" href="#carteira" data-view="view-wallet">
+            <span class="nav-icon"><i class="ph ph-wallet"></i></span>
+            <span class="nav-label">Carteira</span>
+          </a>
+          <a class="nav-item" href="#alertas" data-view="view-alerts">
+            <span class="nav-icon"><i class="ph ph-bell"></i></span>
+            <span class="nav-label">Alertas</span>
+          </a>
+          <a class="nav-item" href="#configuracoes" data-view="view-settings">
+            <span class="nav-icon"><i class="ph ph-gear-six"></i></span>
+            <span class="nav-label">Configurações</span>
+          </a>
         </nav>
-        <div class="sidebar-toggle">
-          <span>Moeda</span>
-          <button class="currency-toggle" id="currencyToggle" type="button">
-            <span class="toggle-option" data-currency="usd">USD</span>
-            <span class="toggle-option" data-currency="brl">BRL</span>
-          </button>
-        </div>
         <div class="sidebar-footer">
           <span class="status-dot"></span>
           <span>Atualização em tempo real</span>
           <span class="mock-indicator" id="mockIndicator" hidden>Modo Offline / Demo</span>
         </div>
-        <footer class="sidebar-footer-author">
-          <span>Desenvolvido por Gustavo Menani</span>
-          <div>
-            <a href="#" aria-label="GitHub do autor">GitHub</a>
-            <a href="#" aria-label="LinkedIn do autor">LinkedIn</a>
-          </div>
-        </footer>
       </aside>
 
       <main class="main">
@@ -208,6 +213,98 @@
             <ul class="wallet-list" id="walletList">
               <li class="wallet-empty">Nenhum ativo adicionado ainda.</li>
             </ul>
+          </section>
+        </section>
+
+        <section class="view" id="view-alerts" hidden>
+          <header class="main-header">
+            <div>
+              <h1>Alertas</h1>
+              <p>Crie alertas simples de preço</p>
+            </div>
+          </header>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Novo alerta</h2>
+                <p>Defina a moeda e o preço alvo</p>
+              </div>
+            </div>
+            <form class="alert-form" id="alertForm">
+              <label class="input-group">
+                <span>Moeda</span>
+                <select id="alertCoin" required></select>
+              </label>
+              <label class="input-group">
+                <span>Preço alvo</span>
+                <input id="alertTarget" type="number" min="0" step="any" placeholder="0.00" required />
+              </label>
+              <button class="ghost-button" type="submit">Criar alerta</button>
+            </form>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Alertas ativos</h2>
+                <p>Monitoramento simples</p>
+              </div>
+            </div>
+            <ul class="alert-list" id="alertList">
+              <li class="wallet-empty">Nenhum alerta cadastrado.</li>
+            </ul>
+          </section>
+        </section>
+
+        <section class="view" id="view-settings" hidden>
+          <header class="main-header">
+            <div>
+              <h1>Configurações</h1>
+              <p>Preferências de visualização e dados</p>
+            </div>
+          </header>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Moeda padrão</h2>
+                <p>Selecione USD ou BRL</p>
+              </div>
+            </div>
+            <div class="settings-row">
+              <span>Moeda</span>
+              <button class="currency-toggle" id="currencyToggle" type="button">
+                <span class="toggle-option" data-currency="usd">USD</span>
+                <span class="toggle-option" data-currency="brl">BRL</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Preferências</h2>
+                <p>Otimize a experiência</p>
+              </div>
+            </div>
+            <div class="settings-row">
+              <span>Animações reduzidas</span>
+              <label class="switch">
+                <input type="checkbox" id="reducedMotionToggle" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Zona perigosa</h2>
+                <p>Limpe todos os dados locais</p>
+              </div>
+            </div>
+            <button class="danger-button" id="resetButton" type="button">Resetar dados</button>
           </section>
         </section>
       </main>

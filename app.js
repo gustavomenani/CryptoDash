@@ -9,6 +9,8 @@ const COINS = [
 const API_BASE = "https://api.coingecko.com/api/v3";
 const PORTFOLIO_KEY = "cryptodash-portfolio";
 const CURRENCY_KEY = "cryptodash-currency";
+const ALERTS_KEY = "cryptodash-alerts";
+const REDUCED_MOTION_KEY = "cryptodash-reduced-motion";
 
 const MOCK_MARKETS = [
   {
@@ -151,6 +153,12 @@ const elements = {
   marketSearch: document.getElementById("marketSearch"),
   marketLoadMore: document.getElementById("marketLoadMore"),
   marketLoader: document.getElementById("marketLoader"),
+  alertForm: document.getElementById("alertForm"),
+  alertCoin: document.getElementById("alertCoin"),
+  alertTarget: document.getElementById("alertTarget"),
+  alertList: document.getElementById("alertList"),
+  resetButton: document.getElementById("resetButton"),
+  reducedMotionToggle: document.getElementById("reducedMotionToggle"),
   walletForm: document.getElementById("walletForm"),
   walletCoin: document.getElementById("walletCoin"),
   walletAmount: document.getElementById("walletAmount"),
@@ -215,6 +223,14 @@ const setCurrency = (currency) => {
   });
 };
 
+const setReducedMotion = (enabled) => {
+  localStorage.setItem(REDUCED_MOTION_KEY, enabled ? "1" : "0");
+  document.body.classList.toggle("reduced-motion", enabled);
+  if (elements.reducedMotionToggle) {
+    elements.reducedMotionToggle.checked = enabled;
+  }
+};
+
 const setLoadingCards = () => {
   elements.priceCards.innerHTML = "";
   for (let i = 0; i < COINS.length; i += 1) {
@@ -273,9 +289,6 @@ const fetchJSON = async (url) => {
 const filterMockMarketsByIds = (ids) =>
   MOCK_MARKETS.filter((coin) => ids.includes(coin.id));
 
-/**
- * Busca cotações principais para os cards do dashboard, com fallback para mocks.
- */
 /**
  * Busca cotações principais para os cards do dashboard, com fallback para mocks.
  */
@@ -537,6 +550,7 @@ const loadDashboard = async () => {
     renderCards(marketData);
     renderStats(globalData);
     await updateChart();
+    renderAlertsView();
     state.dashboardLoaded = true;
   } catch (error) {
     setError(true);
@@ -634,6 +648,68 @@ const savePortfolio = (portfolio) => {
   localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(portfolio));
 };
 
+const getAlerts = () => {
+  const raw = localStorage.getItem(ALERTS_KEY);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return [];
+  }
+};
+
+const saveAlerts = (alerts) => {
+  localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts));
+};
+
+const renderAlerts = (alerts, prices) => {
+  if (!elements.alertList) return;
+  if (!alerts.length) {
+    elements.alertList.innerHTML = '<li class="wallet-empty">Nenhum alerta cadastrado.</li>';
+    return;
+  }
+
+  const priceMap = prices.reduce((acc, item) => {
+    acc[item.id] = item.current_price;
+    return acc;
+  }, {});
+
+  elements.alertList.innerHTML = "";
+  alerts.forEach((alertItem) => {
+    const currentPrice = priceMap[alertItem.id] ?? 0;
+    const hit = currentPrice >= alertItem.target;
+    const item = document.createElement("li");
+    item.className = `alert-item${hit ? " alert-triggered" : ""}`;
+    item.innerHTML = `
+      <div>
+        <strong>${alertItem.symbol}</strong>
+        <span>Alvo: ${formatCurrency(alertItem.target)}</span>
+      </div>
+      <div>
+        <strong>${formatCurrency(currentPrice)}</strong>
+        <span>${hit ? "Alvo atingido" : "Aguardando"}</span>
+      </div>
+    `;
+    elements.alertList.appendChild(item);
+  });
+};
+
+const renderAlertsView = async () => {
+  setError(false);
+  const alerts = getAlerts();
+  if (!alerts.length) {
+    renderAlerts([], []);
+    return;
+  }
+
+  try {
+    const prices = await fetchPortfolioPrices(alerts.map((item) => item.id));
+    renderAlerts(alerts, prices);
+  } catch (error) {
+    setError(true);
+  }
+};
+
 /**
  * Renderiza lista e gráfico de alocação da carteira.
  */
@@ -723,9 +799,6 @@ const renderWalletList = (portfolio, prices) => {
 };
 
 /**
- * Renderiza a carteira do usuário, incluindo lista, total e gráfico de alocação.
- */
-/**
  * Renderiza a carteira do usuário, incluindo total e gráfico.
  */
 const renderWallet = async () => {
@@ -792,6 +865,8 @@ const updatePageTitle = (viewId) => {
     "view-dashboard": "Dashboard",
     "view-market": "Mercado",
     "view-wallet": "Carteira",
+    "view-alerts": "Alertas",
+    "view-settings": "Configurações",
   };
   document.title = `${titleMap[viewId] || "CryptoDash"} | CryptoDash`;
 };
@@ -818,6 +893,14 @@ const MapsTo = (viewId) => {
   if (viewId === "view-wallet") {
     renderWallet();
   }
+
+  if (viewId === "view-alerts") {
+    renderAlertsView();
+  }
+
+  if (viewId === "view-settings") {
+    setReducedMotion(localStorage.getItem(REDUCED_MOTION_KEY) === "1");
+  }
 };
 
 if (elements.refreshButton) {
@@ -835,6 +918,26 @@ if (elements.walletForm) {
     const amount = Number(elements.walletAmount.value);
     addToPortfolio(coinId, amount);
     elements.walletAmount.value = "";
+  });
+}
+
+if (elements.alertForm) {
+  elements.alertForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const coinId = elements.alertCoin.value;
+    const target = Number(elements.alertTarget.value);
+    if (!coinId || target <= 0) return;
+    const coin = COINS.find((item) => item.id === coinId);
+    if (!coin) return;
+    const alerts = getAlerts();
+    alerts.push({
+      id: coin.id,
+      symbol: coin.symbol,
+      target,
+    });
+    saveAlerts(alerts);
+    elements.alertTarget.value = "";
+    renderAlertsView();
   });
 }
 
@@ -890,6 +993,20 @@ if (elements.currencyToggle) {
     }
     renderMarket(true);
     renderWallet();
+    renderAlertsView();
+  });
+}
+
+if (elements.resetButton) {
+  elements.resetButton.addEventListener("click", () => {
+    localStorage.clear();
+    location.reload();
+  });
+}
+
+if (elements.reducedMotionToggle) {
+  elements.reducedMotionToggle.addEventListener("change", (event) => {
+    setReducedMotion(event.target.checked);
   });
 }
 
@@ -905,13 +1022,25 @@ if (elements.navItems.length) {
 }
 
 buildWalletSelect();
+if (elements.alertCoin) {
+  elements.alertCoin.innerHTML = "";
+  COINS.forEach((coin) => {
+    const option = document.createElement("option");
+    option.value = coin.id;
+    option.textContent = `${coin.name} (${coin.symbol})`;
+    elements.alertCoin.appendChild(option);
+  });
+}
 setCurrency(state.currency);
+setReducedMotion(localStorage.getItem(REDUCED_MOTION_KEY) === "1");
 
 const initialHash = window.location.hash;
 const viewMap = {
   "#dashboard": "view-dashboard",
   "#mercado": "view-market",
   "#carteira": "view-wallet",
+  "#alertas": "view-alerts",
+  "#configuracoes": "view-settings",
 };
 
 MapsTo(viewMap[initialHash] || "view-dashboard");
