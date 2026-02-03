@@ -23,15 +23,23 @@
           </div>
         </div>
         <nav class="nav">
-          <a class="nav-item active" href="#dashboard" data-view="dashboard-view">Dashboard</a>
-          <a class="nav-item" href="#mercado" data-view="market-view">Mercado</a>
-          <a class="nav-item" href="#carteira" data-view="wallet-view">Carteira</a>
+          <a class="nav-item active" href="#dashboard" data-view="view-dashboard">Dashboard</a>
+          <a class="nav-item" href="#mercado" data-view="view-market">Mercado</a>
+          <a class="nav-item" href="#carteira" data-view="view-wallet">Carteira</a>
           <a class="nav-item" href="#alertas">Alertas</a>
           <a class="nav-item" href="#configuracoes">Configurações</a>
         </nav>
+        <div class="sidebar-toggle">
+          <span>Moeda</span>
+          <button class="currency-toggle" id="currencyToggle" type="button">
+            <span class="toggle-option" data-currency="usd">USD</span>
+            <span class="toggle-option" data-currency="brl">BRL</span>
+          </button>
+        </div>
         <div class="sidebar-footer">
           <span class="status-dot"></span>
           <span>Atualização em tempo real</span>
+          <span class="mock-indicator" id="mockIndicator" hidden>Modo Offline / Demo</span>
         </div>
       </aside>
 
@@ -40,7 +48,7 @@
           <span>Não foi possível carregar os dados agora. Tente novamente.</span>
         </section>
 
-        <section class="view active" id="dashboard-view">
+        <section class="view" id="view-dashboard">
           <header class="main-header">
             <div>
               <h1>Painel Financeiro</h1>
@@ -64,9 +72,18 @@
                 <h2>Flutuação de preço</h2>
                 <p id="chartSubtitle">Últimos 7 dias</p>
               </div>
-              <div class="chip" id="selectedCoin">BTC</div>
+              <div class="panel-actions">
+                <div class="timeframe" id="timeframeButtons">
+                  <button class="timeframe-button active" data-days="1">24h</button>
+                  <button class="timeframe-button" data-days="7">7D</button>
+                  <button class="timeframe-button" data-days="30">30D</button>
+                  <button class="timeframe-button" data-days="365">1A</button>
+                </div>
+                <div class="chip" id="selectedCoin">BTC</div>
+              </div>
             </div>
-            <div class="chart-wrapper">
+            <div class="chart-wrapper" id="chartWrapper">
+              <div class="loading-spinner" id="chartLoader" hidden></div>
               <canvas id="priceChart" height="120"></canvas>
             </div>
           </section>
@@ -87,11 +104,11 @@
           </section>
         </section>
 
-        <section class="view" id="market-view">
+        <section class="view" id="view-market" hidden>
           <header class="main-header">
             <div>
               <h1>Mercado</h1>
-              <p>Top 20 criptomoedas por capitalização</p>
+              <p>Top 50 criptomoedas por capitalização</p>
             </div>
             <div class="header-actions">
               <button class="ghost-button" id="marketRefreshButton">Atualizar</button>
@@ -104,6 +121,14 @@
                 <h2>Ranking global</h2>
                 <p>Dados em tempo real via CoinGecko</p>
               </div>
+            </div>
+            <div class="market-tools">
+              <input
+                class="market-search"
+                id="marketSearch"
+                type="text"
+                placeholder="Buscar moeda por nome ou símbolo"
+              />
             </div>
             <div class="table-wrapper">
               <table class="market-table">
@@ -123,10 +148,14 @@
                 </tbody>
               </table>
             </div>
+            <div class="market-actions">
+              <button class="ghost-button" id="marketLoadMore">Carregar Mais</button>
+              <div class="loading-spinner" id="marketLoader" hidden></div>
+            </div>
           </section>
         </section>
 
-        <section class="view" id="wallet-view">
+        <section class="view" id="view-wallet" hidden>
           <header class="main-header">
             <div>
               <h1>Carteira</h1>
@@ -161,6 +190,9 @@
                 <p>Saldo total estimado</p>
               </div>
               <div class="chip" id="walletTotal">US$ 0,00</div>
+            </div>
+            <div class="wallet-chart">
+              <canvas id="walletChart" height="160"></canvas>
             </div>
             <ul class="wallet-list" id="walletList">
               <li class="wallet-empty">Nenhum ativo adicionado ainda.</li>
