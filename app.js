@@ -1,3 +1,4 @@
+// --- CONFIG & CONSTANTS ---
 const COINS = [
   { id: "bitcoin", name: "Bitcoin", symbol: "BTC" },
   { id: "ethereum", name: "Ethereum", symbol: "ETH" },
@@ -128,6 +129,7 @@ const MOCK_CHART = {
   }),
 };
 
+// --- DOM ELEMENTS ---
 const elements = {
   priceCards: document.getElementById("priceCards"),
   errorBanner: document.getElementById("errorBanner"),
@@ -157,6 +159,7 @@ const elements = {
   walletChart: document.getElementById("walletChart"),
 };
 
+// --- STATE MANAGEMENT ---
 const state = {
   selectedId: COINS[0].id,
   chart: null,
@@ -171,6 +174,7 @@ const state = {
   usingMock: false,
 };
 
+// --- FORMATTERS ---
 const formatCurrency = (value) =>
   new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -191,6 +195,7 @@ const formatPercent = (value) => {
   return `${value.toFixed(2)}%`;
 };
 
+// --- UI HELPERS ---
 const setError = (visible) => {
   elements.errorBanner.hidden = !visible;
 };
@@ -220,6 +225,7 @@ const setLoadingCards = () => {
   }
 };
 
+// --- MOCK FACTORIES ---
 const buildMockMarkets = (count = 4) => {
   const sample = COINS.map((coin, index) => ({
     id: coin.id,
@@ -255,6 +261,7 @@ const buildMockChart = (days) => {
   return { prices };
 };
 
+// --- API HANDLERS ---
 const fetchJSON = async (url) => {
   const response = await fetch(url);
   if (!response.ok) {
@@ -266,6 +273,12 @@ const fetchJSON = async (url) => {
 const filterMockMarketsByIds = (ids) =>
   MOCK_MARKETS.filter((coin) => ids.includes(coin.id));
 
+/**
+ * Busca cotações principais para os cards do dashboard, com fallback para mocks.
+ */
+/**
+ * Busca cotações principais para os cards do dashboard, com fallback para mocks.
+ */
 const fetchMarketData = async () => {
   const ids = COINS.map((coin) => coin.id).join(",");
   const url = `${API_BASE}/coins/markets?vs_currency=${state.currency}&ids=${ids}&order=market_cap_desc&price_change_percentage=24h`;
@@ -280,6 +293,9 @@ const fetchMarketData = async () => {
   }
 };
 
+/**
+ * Busca dados globais do mercado para indicadores superiores.
+ */
 const fetchGlobalData = async () => {
   const url = `${API_BASE}/global`;
   try {
@@ -293,6 +309,9 @@ const fetchGlobalData = async () => {
   }
 };
 
+/**
+ * Busca séries históricas para o gráfico principal.
+ */
 const fetchChartData = async (coinId, days) => {
   const url = `${API_BASE}/coins/${coinId}/market_chart?vs_currency=${state.currency}&days=${days}`;
   try {
@@ -306,6 +325,9 @@ const fetchChartData = async (coinId, days) => {
   }
 };
 
+/**
+ * Busca lista paginada de moedas para o Mercado.
+ */
 const fetchTopMarketData = async (page) => {
   const url = `${API_BASE}/coins/markets?vs_currency=${state.currency}&order=market_cap_desc&per_page=20&page=${page}&price_change_percentage=24h`;
   try {
@@ -320,6 +342,9 @@ const fetchTopMarketData = async (page) => {
   }
 };
 
+/**
+ * Busca preços atuais para ativos da carteira.
+ */
 const fetchPortfolioPrices = async (ids) => {
   const url = `${API_BASE}/coins/markets?vs_currency=${state.currency}&ids=${ids.join(",")}&order=market_cap_desc&price_change_percentage=24h`;
   try {
@@ -333,6 +358,7 @@ const fetchPortfolioPrices = async (ids) => {
   }
 };
 
+// --- DOM RENDERERS ---
 const renderCards = (data) => {
   elements.priceCards.innerHTML = "";
 
@@ -517,6 +543,9 @@ const loadDashboard = async () => {
   }
 };
 
+/**
+ * Renderiza a tabela de mercado com os dados atuais.
+ */
 const renderMarketTable = (data) => {
   elements.marketTableBody.innerHTML = "";
 
@@ -560,6 +589,9 @@ const applyMarketFilter = () => {
   renderMarketTable(filtered);
 };
 
+/**
+ * Carrega a tabela de mercado com paginação e filtros.
+ */
 const renderMarket = async (reset = false) => {
   setError(false);
 
@@ -602,6 +634,9 @@ const savePortfolio = (portfolio) => {
   localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(portfolio));
 };
 
+/**
+ * Renderiza lista e gráfico de alocação da carteira.
+ */
 const renderWalletList = (portfolio, prices) => {
   if (!portfolio.length) {
     elements.walletList.innerHTML =
@@ -687,6 +722,12 @@ const renderWalletList = (portfolio, prices) => {
   }
 };
 
+/**
+ * Renderiza a carteira do usuário, incluindo lista, total e gráfico de alocação.
+ */
+/**
+ * Renderiza a carteira do usuário, incluindo total e gráfico.
+ */
 const renderWallet = async () => {
   setError(false);
   const portfolio = getPortfolio();
@@ -736,10 +777,23 @@ const addToPortfolio = (coinId, amount) => {
   renderWallet();
 };
 
+/**
+ * Renderiza o dashboard principal com dados e gráficos.
+ */
 const renderDashboard = async () => {
   if (!state.dashboardLoaded) {
     await loadDashboard();
   }
+};
+
+// --- NAVIGATION ---
+const updatePageTitle = (viewId) => {
+  const titleMap = {
+    "view-dashboard": "Dashboard",
+    "view-market": "Mercado",
+    "view-wallet": "Carteira",
+  };
+  document.title = `${titleMap[viewId] || "CryptoDash"} | CryptoDash`;
 };
 
 const MapsTo = (viewId) => {
@@ -750,6 +804,8 @@ const MapsTo = (viewId) => {
   elements.navItems.forEach((item) => {
     item.classList.toggle("active", item.dataset.view === viewId);
   });
+
+  updatePageTitle(viewId);
 
   if (viewId === "view-dashboard") {
     renderDashboard();

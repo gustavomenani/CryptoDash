@@ -1,21 +1,26 @@
 # CryptoDash
 
-Dashboard financeiro responsivo em tema escuro para acompanhar cotações de крипتوativos em tempo real usando a API da CoinGecko.
+![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-00f5a0)
 
-## Stack
-- HTML5 + CSS3 (Flexbox/Grid)
+## Sobre
+CryptoDash é uma SPA sem frameworks que acompanha o mercado de criptoativos com tema dark/glassmorphism, gráficos interativos e persistência local. A aplicação integra a API da CoinGecko com fallback de Mock Data para manter a experiência estável em desenvolvimento.
+
+## Features
+- Dashboard com cards, estatísticas globais e gráfico de preço
+- Mercado com busca em tempo real e paginação
+- Carteira com persistência local e gráfico de alocação
+- Modo Mock automático quando a API falha
+
+## Tecnologias
+- HTML5 + CSS3
 - JavaScript (Vanilla)
 - Chart.js
 - Fetch API + Async/Await
 
-## Como executar
-1. Abra o arquivo index.html no navegador.
-2. Clique em "Atualizar" para recarregar os dados quando quiser.
+## Como rodar (evitar CORS)
+1. Instale a extensão **Live Server** no VS Code.
+2. Abra o arquivo `index.html`.
+3. Clique com o botão direito e selecione **Open with Live Server**.
 
-## Funcionalidades
-- Sidebar com navegação
-- Cards de cotações (BTC, ETH, SOL, ADA)
-- Gráfico de linha com histórico de 7 dias
-- Indicadores de mercado (dominância BTC, market cap e volume 24h)
-- Tratamento de erros de conexão
-# CryptoDash
+## Autor
+Gustavo Menani
