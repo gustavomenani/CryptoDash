@@ -6,6 +6,7 @@ const devCache = new Map<string, { body: string; ts: number }>();
 const DEV_CACHE_TTL = 180_000; // 3 minutes
 
 export default defineConfig({
+  base: process.env.GITHUB_ACTIONS ? '/CryptoDash/' : '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
