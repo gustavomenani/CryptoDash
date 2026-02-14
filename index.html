@@ -1,316 +1,724 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CryptoDash</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
-    />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2300f5a0'/%3E%3Cstop offset='1' stop-color='%235f6bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='28' fill='url(%23g)'/%3E%3Cpath d='M22 34c6-2 8-10 12-14 3-3 6 0 4 3-3 5-6 11-12 15-4 3-8 2-10-4-1-2 2-0 6 0z' fill='%230b0f1e'/%3E%3C/svg%3E"
-    />
-  </head>
-  <body>
-    <div class="app">
-      <aside class="sidebar">
-        <div class="brand">
-          <div class="brand-icon logo-mark" aria-hidden="true"></div>
-          <div class="brand-text">
-            <span class="brand-title">CryptoDash</span>
-            <span class="brand-subtitle">Portfolio</span>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/icon.png?v=nuclear" />
+  <link rel="shortcut icon" href="/icon.png?v=nuclear" />
+  <title>CryptoDash</title>
+  <meta name="description"
+    content="CryptoDash — Dashboard premium de monitoramento de criptomoedas em tempo real." />
+  <meta name="theme-color" content="#0b0f1e" />
+  <meta name="author" content="Gustavo Menani" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="CryptoDash" />
+  <meta property="og:description"
+    content="Monitore Bitcoin, Ethereum e mais criptomoedas em tempo real." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://api.coingecko.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
+  <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-logo">
+      <img class="brand-icon" src="/logo.png" alt="CryptoDash" width="48" height="48" />
+      <span class="loading-title">CryptoDash</span>
+      <div class="loading-bar">
+        <div class="loading-bar-fill"></div>
+      </div>
+      <span class="loading-text" data-i18n="common.loading">Carregando...</span>
+    </div>
+  </div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-icon" src="/logo.png" alt="CryptoDash" width="40" height="40" />
+        <div class="brand-text">
+          <span class="brand-title">CryptoDash</span>
+        </div>
+      </div>
+      <nav class="nav" role="navigation" aria-label="Menu principal">
+        <a class="nav-item active" href="#dashboard" data-view="view-dashboard">
+          <span class="nav-icon"><i class="ph-light ph-squares-four"></i></span>
+          <span class="nav-label" data-i18n="nav.dashboard">Dashboard</span>
+        </a>
+        <a class="nav-item" href="#mercado" data-view="view-market">
+          <span class="nav-icon"><i class="ph-light ph-chart-line-up"></i></span>
+          <span class="nav-label" data-i18n="nav.market">Mercado</span>
+        </a>
+        <a class="nav-item" href="#conversor" data-view="view-converter">
+          <span class="nav-icon"><i class="ph-light ph-arrows-left-right"></i></span>
+          <span class="nav-label" data-i18n="nav.converter">Conversor</span>
+        </a>
+        <a class="nav-item" href="#carteira" data-view="view-wallet">
+          <span class="nav-icon"><i class="ph-light ph-wallet"></i></span>
+          <span class="nav-label" data-i18n="nav.wallet">Carteira</span>
+        </a>
+        <a class="nav-item" href="#alertas" data-view="view-alerts">
+          <span class="nav-icon"><i class="ph-light ph-bell"></i></span>
+          <span class="nav-label" data-i18n="nav.alerts">Alertas</span>
+          <span class="nav-badge" id="alertBadge" hidden>0</span>
+        </a>
+        <a class="nav-item" href="#noticias" data-view="view-news">
+          <span class="nav-icon"><i class="ph-light ph-newspaper"></i></span>
+          <span class="nav-label" data-i18n="nav.news">Notícias</span>
+        </a>
+        <a class="nav-item" href="#configuracoes" data-view="view-settings">
+          <span class="nav-icon"><i class="ph-light ph-gear-six"></i></span>
+          <span class="nav-label" data-i18n="nav.settings">Config</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel">Conectando...</span>
+        <span class="mock-indicator" id="mockIndicator" hidden>DEMO</span>
+      </div>
+    </aside>
+
+    <main class="main" id="main-content" role="main">
+      <section class="alert" id="errorBanner" hidden>
+        <i class="ph-light ph-warning-circle"></i>
+        <span>Não foi possível carregar os dados. Verifique sua conexão.</span>
+        <button class="alert-dismiss" id="dismissError" type="button" aria-label="Fechar">&times;</button>
+      </section>
+
+      <!-- ========== DASHBOARD ========== -->
+      <section class="view" id="view-dashboard">
+        <header class="main-header">
+          <div>
+            <h1 data-i18n="dashboard.title">Painel Financeiro</h1>
+            <p class="header-subtitle">
+              <span data-i18n="dashboard.subtitle">Monitoramento de criptoativos em tempo real</span>
+              <span class="auto-refresh-badge" id="autoRefreshBadge" hidden>
+                <i class="ph-light ph-clock-clockwise"></i>
+                <span id="autoRefreshCountdown">60s</span>
+              </span>
+            </p>
           </div>
-        </div>
-        <nav class="nav">
-          <a class="nav-item active" href="#dashboard" data-view="view-dashboard">
-            <span class="nav-icon"><i class="ph ph-squares-four"></i></span>
-            <span class="nav-label">Dashboard</span>
-          </a>
-          <a class="nav-item" href="#mercado" data-view="view-market">
-            <span class="nav-icon"><i class="ph ph-chart-line-up"></i></span>
-            <span class="nav-label">Mercado</span>
-          </a>
-          <a class="nav-item" href="#carteira" data-view="view-wallet">
-            <span class="nav-icon"><i class="ph ph-wallet"></i></span>
-            <span class="nav-label">Carteira</span>
-          </a>
-          <a class="nav-item" href="#alertas" data-view="view-alerts">
-            <span class="nav-icon"><i class="ph ph-bell"></i></span>
-            <span class="nav-label">Alertas</span>
-          </a>
-          <a class="nav-item" href="#configuracoes" data-view="view-settings">
-            <span class="nav-icon"><i class="ph ph-gear-six"></i></span>
-            <span class="nav-label">Configurações</span>
-          </a>
-        </nav>
-        <div class="sidebar-footer">
-          <span class="status-dot"></span>
-          <span>Atualização em tempo real</span>
-          <span class="mock-indicator" id="mockIndicator" hidden>Modo Offline / Demo</span>
-        </div>
-      </aside>
+          <div class="header-actions">
+            <span class="last-update" id="lastUpdate"></span>
+            <button class="ghost-button icon-button" id="refreshButton" aria-label="Atualizar dados">
+              <i class="ph-light ph-arrows-clockwise"></i><span data-i18n="common.refresh">Atualizar</span>
+            </button>
+          </div>
+        </header>
 
-      <main class="main">
-        <section class="alert" id="errorBanner" hidden>
-          <span>Não foi possível carregar os dados agora. Tente novamente.</span>
+        <!-- Fear & Greed -->
+        <section class="fear-greed-bar">
+          <div class="fg-info">
+            <span class="fg-label" data-i18n="dashboard.fearGreed">Fear & Greed Index</span>
+            <strong class="fg-value" id="fgValue">--</strong>
+            <span class="fg-sentiment" id="fgSentiment">--</span>
+          </div>
+          <div class="fg-track">
+            <div class="fg-fill" id="fgFill" style="width:0%"></div>
+          </div>
         </section>
 
-        <section class="view" id="view-dashboard">
-          <header class="main-header">
-            <div>
-              <h1>Painel Financeiro</h1>
-              <p>Monitoramento de criptoativos em tempo real</p>
-            </div>
-            <div class="header-actions">
-              <button class="ghost-button" id="refreshButton">Atualizar</button>
-            </div>
-          </header>
-
-          <section class="cards" id="priceCards">
-            <div class="card loading">Carregando...</div>
-            <div class="card loading">Carregando...</div>
-            <div class="card loading">Carregando...</div>
-            <div class="card loading">Carregando...</div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Flutuação de preço</h2>
-                <p id="chartSubtitle">Últimos 7 dias</p>
-              </div>
-              <div class="panel-actions">
-                <div class="timeframe" id="timeframeButtons">
-                  <button class="timeframe-button active" data-days="1">24h</button>
-                  <button class="timeframe-button" data-days="7">7D</button>
-                  <button class="timeframe-button" data-days="30">30D</button>
-                  <button class="timeframe-button" data-days="365">1A</button>
-                </div>
-                <div class="chip" id="selectedCoin">BTC</div>
-              </div>
-            </div>
-            <div class="chart-wrapper" id="chartWrapper">
-              <div class="loading-spinner" id="chartLoader" hidden></div>
-              <canvas id="priceChart" height="120"></canvas>
-            </div>
-          </section>
-
-          <section class="stats-grid">
-            <div class="stat">
-              <span class="stat-label">Dominância BTC</span>
-              <strong class="stat-value" id="btcDominance">--</strong>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Market Cap Total</span>
-              <strong class="stat-value" id="totalMarketCap">--</strong>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Volume 24h</span>
-              <strong class="stat-value" id="totalVolume">--</strong>
-            </div>
-          </section>
+        <!-- Price Cards -->
+        <section class="cards" id="priceCards">
+          <div class="card skeleton-card">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-price"></div>
+            <div class="skeleton skeleton-sparkline"></div>
+          </div>
+          <div class="card skeleton-card">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-price"></div>
+            <div class="skeleton skeleton-sparkline"></div>
+          </div>
+          <div class="card skeleton-card">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-price"></div>
+            <div class="skeleton skeleton-sparkline"></div>
+          </div>
+          <div class="card skeleton-card">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-price"></div>
+            <div class="skeleton skeleton-sparkline"></div>
+          </div>
         </section>
 
-        <section class="view" id="view-market" hidden>
-          <header class="main-header">
+        <!-- Chart -->
+        <section class="panel">
+          <div class="panel-header">
             <div>
-              <h1>Mercado</h1>
-              <p>Top 50 criptomoedas por capitalização</p>
+              <h2>Flutuação de preço</h2>
+              <p id="chartSubtitle">Últimos 7 dias — Bitcoin</p>
             </div>
-            <div class="header-actions">
-              <button class="ghost-button" id="marketRefreshButton">Atualizar</button>
-            </div>
-          </header>
-
-          <section class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Ranking global</h2>
-                <p>Dados em tempo real via CoinGecko</p>
+            <div class="panel-actions">
+              <div class="timeframe">
+                <button class="timeframe-button" data-days="1">24h</button>
+                <button class="timeframe-button active" data-days="7">7D</button>
+                <button class="timeframe-button" data-days="30">30D</button>
+                <button class="timeframe-button" data-days="90">90D</button>
+                <button class="timeframe-button" data-days="365">1A</button>
               </div>
+              <div class="chip" id="selectedCoin">BTC</div>
             </div>
-            <div class="market-tools">
-              <input
-                class="market-search"
-                id="marketSearch"
-                type="text"
-                placeholder="Buscar moeda por nome ou símbolo"
-              />
-            </div>
-            <div class="table-wrapper">
-              <table class="market-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Nome / Símbolo</th>
-                    <th>Preço Atual</th>
-                    <th>Variação 24h</th>
-                    <th>Market Cap</th>
-                  </tr>
-                </thead>
-                <tbody id="marketTableBody">
-                  <tr class="table-loading">
-                    <td colspan="5">Carregando...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="market-actions">
-              <button class="ghost-button" id="marketLoadMore">Carregar Mais</button>
-              <div class="loading-spinner" id="marketLoader" hidden></div>
-            </div>
-          </section>
+          </div>
+          <div class="chart-wrapper">
+            <div class="loading-spinner" id="chartLoader" hidden></div><canvas id="priceChart"></canvas>
+          </div>
         </section>
 
-        <section class="view" id="view-wallet" hidden>
-          <header class="main-header">
-            <div>
-              <h1>Carteira</h1>
-              <p>Monte seu portfólio e acompanhe o saldo</p>
+        <!-- Stats -->
+        <section class="stats-grid">
+          <div class="stat"><span class="stat-label"><i class="ph-light ph-crown"></i> <span
+                data-i18n="dashboard.dominance">Dominância BTC</span></span><strong class="stat-value"
+              id="btcDominance">--</strong>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" id="btcDominanceBar" style="width:0%"></div>
             </div>
-          </header>
+          </div>
+          <div class="stat"><span class="stat-label"><i class="ph-light ph-bank"></i> <span
+                data-i18n="dashboard.marketCap">Market Cap Total</span></span><strong class="stat-value"
+              id="totalMarketCap">--</strong></div>
+          <div class="stat"><span class="stat-label"><i class="ph-light ph-chart-bar"></i> <span
+                data-i18n="dashboard.volume">Volume 24h</span></span><strong class="stat-value"
+              id="totalVolume">--</strong></div>
+          <div class="stat"><span class="stat-label"><i class="ph-light ph-coins"></i> <span>Criptos
+                ativas</span></span><strong class="stat-value" id="activeCryptos">--</strong></div>
+        </section>
 
-          <section class="panel">
+        <!-- Gainers / Losers -->
+        <section class="gainers-losers-grid">
+          <div class="panel mini-panel">
             <div class="panel-header">
               <div>
-                <h2>Adicionar ativo</h2>
-                <p>Escolha a moeda e informe a quantidade</p>
+                <h2><i class="ph-light ph-trend-up"></i> <span data-i18n="dashboard.gainers">Maiores Altas</span></h2>
+                <p>24 horas</p>
               </div>
             </div>
-            <form class="wallet-form" id="walletForm">
-              <label class="input-group">
-                <span>Moeda</span>
-                <select id="walletCoin" required></select>
-              </label>
-              <label class="input-group">
-                <span>Quantidade</span>
-                <input id="walletAmount" type="number" min="0" step="any" placeholder="0.00" required />
-              </label>
-              <button class="ghost-button" type="submit">Adicionar</button>
-            </form>
-          </section>
-
-          <section class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Seus ativos</h2>
-                <p>Saldo total estimado</p>
-              </div>
-              <div class="chip" id="walletTotal">US$ 0,00</div>
-            </div>
-            <div class="wallet-chart">
-              <canvas id="walletChart" height="160"></canvas>
-            </div>
-            <ul class="wallet-list" id="walletList">
-              <li class="wallet-empty">Nenhum ativo adicionado ainda.</li>
+            <ul class="movers-list" id="topGainers">
+              <li class="mover-empty">Carregando...</li>
             </ul>
-          </section>
-        </section>
-
-        <section class="view" id="view-alerts" hidden>
-          <header class="main-header">
-            <div>
-              <h1>Alertas</h1>
-              <p>Crie alertas simples de preço</p>
-            </div>
-          </header>
-
-          <section class="panel">
+          </div>
+          <div class="panel mini-panel">
             <div class="panel-header">
               <div>
-                <h2>Novo alerta</h2>
-                <p>Defina a moeda e o preço alvo</p>
+                <h2><i class="ph-light ph-trend-down"></i> <span data-i18n="dashboard.losers">Maiores Quedas</span></h2>
+                <p>24 horas</p>
               </div>
             </div>
-            <form class="alert-form" id="alertForm">
-              <label class="input-group">
-                <span>Moeda</span>
-                <select id="alertCoin" required></select>
-              </label>
-              <label class="input-group">
-                <span>Preço alvo</span>
-                <input id="alertTarget" type="number" min="0" step="any" placeholder="0.00" required />
-              </label>
-              <button class="ghost-button" type="submit">Criar alerta</button>
-            </form>
-          </section>
-
-          <section class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Alertas ativos</h2>
-                <p>Monitoramento simples</p>
-              </div>
-            </div>
-            <ul class="alert-list" id="alertList">
-              <li class="wallet-empty">Nenhum alerta cadastrado.</li>
+            <ul class="movers-list" id="topLosers">
+              <li class="mover-empty">Carregando...</li>
             </ul>
-          </section>
+          </div>
         </section>
+      </section>
 
-        <section class="view" id="view-settings" hidden>
-          <header class="main-header">
-            <div>
-              <h1>Configurações</h1>
-              <p>Preferências de visualização e dados</p>
-            </div>
-          </header>
-
-          <section class="panel">
-            <div class="panel-header">
+      <!-- ========== COIN DETAIL (overlay) ========== -->
+      <section class="view" id="view-coin-detail" hidden>
+        <header class="main-header">
+          <div class="coin-detail-header">
+            <button class="ghost-button icon-button" id="coinDetailBack" type="button"><i
+                class="ph-light ph-arrow-left"></i><span>Voltar</span></button>
+            <div class="coin-detail-title">
+              <img class="coin-detail-icon" id="coinDetailIcon" src="" alt="" />
               <div>
-                <h2>Moeda padrão</h2>
-                <p>Selecione USD ou BRL</p>
+                <h1 id="coinDetailName">--</h1>
+                <p id="coinDetailSymbol">--</p>
               </div>
             </div>
-            <div class="settings-row">
-              <span>Moeda</span>
-              <button class="currency-toggle" id="currencyToggle" type="button">
-                <span class="toggle-option" data-currency="usd">USD</span>
-                <span class="toggle-option" data-currency="brl">BRL</span>
+          </div>
+          <div class="header-actions">
+            <button class="ghost-button icon-button" id="coinDetailFav" type="button" aria-label="Favoritar"><i
+                class="ph-light ph-star"></i><span>Favoritar</span></button>
+          </div>
+        </header>
+        <div class="coin-detail-stats" id="coinDetailStats"></div>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Gráfico de preço</h2>
+              <p id="coinDetailChartSubtitle">Últimos 7 dias</p>
+            </div>
+            <div class="panel-actions">
+              <div class="timeframe" id="coinDetailTimeframe">
+                <button class="timeframe-button" data-days="1">24h</button>
+                <button class="timeframe-button active" data-days="7">7D</button>
+                <button class="timeframe-button" data-days="30">30D</button>
+                <button class="timeframe-button" data-days="90">90D</button>
+                <button class="timeframe-button" data-days="365">1A</button>
+              </div>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <div class="loading-spinner" id="coinDetailChartLoader" hidden></div><canvas id="coinDetailChart"></canvas>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Informações</h2>
+              <p>Dados completos da moeda</p>
+            </div>
+          </div>
+          <div class="coin-info-grid" id="coinDetailInfo"></div>
+        </section>
+      </section>
+
+      <!-- ========== MERCADO ========== -->
+      <section class="view" id="view-market" hidden>
+        <header class="main-header">
+          <div>
+            <h1 data-i18n="market.title">Mercado</h1>
+            <p>Top criptomoedas por capitalização</p>
+          </div>
+          <div class="header-actions"><button class="ghost-button icon-button" id="marketRefreshButton"><i
+                class="ph-light ph-arrows-clockwise"></i><span data-i18n="common.refresh">Atualizar</span></button>
+          </div>
+        </header>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Ranking global</h2>
+              <p>Dados em tempo real via CoinGecko</p>
+            </div>
+          </div>
+          <div class="market-tools">
+            <div class="search-wrapper"><i class="ph-light ph-magnifying-glass search-icon"></i><input
+                class="market-search" id="marketSearch" type="text" data-i18n-placeholder="market.search"
+                placeholder="Buscar moeda por nome ou símbolo..." autocomplete="off" /></div>
+          </div>
+          <div class="table-wrapper">
+            <table class="market-table">
+              <thead>
+                <tr>
+                  <th data-sort="rank" data-i18n="market.rank">#</th>
+                  <th data-i18n="market.name">Nome</th>
+                  <th data-sort="price" data-i18n="market.price">Preço</th>
+                  <th data-sort="change" data-i18n="market.24h">24h</th>
+                  <th data-sort="volume" data-i18n="market.volume">Volume 24h</th>
+                  <th data-sort="cap" data-i18n="market.marketCap">Market Cap</th>
+                  <th data-i18n="market.7d">7D</th>
+                </tr>
+              </thead>
+              <tbody id="marketTableBody">
+                <tr class="table-loading">
+                  <td colspan="7">Carregando...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="market-actions">
+            <button class="ghost-button icon-button" id="marketLoadMore"><i class="ph-light ph-plus"></i><span>Carregar
+                Mais</span></button>
+            <div class="loading-spinner" id="marketLoader" hidden></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ========== CONVERSOR ========== -->
+      <section class="view" id="view-converter" hidden>
+        <header class="main-header">
+          <div>
+            <h1 data-i18n="converter.title">Conversor</h1>
+            <p>Converta entre criptomoedas e moedas fiduciárias</p>
+          </div>
+        </header>
+        <section class="panel converter-panel">
+          <div class="converter-grid">
+            <div class="converter-side">
+              <label class="input-group"><span data-i18n="converter.from">De</span><select
+                  id="converterFrom"></select></label>
+              <label class="input-group"><span data-i18n="converter.amount">Quantidade</span><input id="converterAmount"
+                  type="number" min="0" step="any" value="1" placeholder="1" /></label>
+            </div>
+            <button class="converter-swap" id="converterSwap" type="button" aria-label="Inverter moedas"><i
+                class="ph-light ph-arrows-left-right"></i></button>
+            <div class="converter-side">
+              <label class="input-group"><span data-i18n="converter.to">Para</span><select
+                  id="converterTo"></select></label>
+              <div class="converter-result-group"><span class="converter-result-label"
+                  data-i18n="converter.result">Resultado</span>
+                <div class="converter-result" id="converterResult">0.00</div>
+              </div>
+            </div>
+          </div>
+          <div class="converter-rate" id="converterRate"></div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Tabela de conversão rápida</h2>
+              <p>Valores populares para referência</p>
+            </div>
+          </div>
+          <div class="quick-convert-grid" id="quickConvertGrid"></div>
+        </section>
+      </section>
+
+      <!-- ========== CARTEIRA ========== -->
+      <section class="view" id="view-wallet" hidden>
+        <header class="main-header">
+          <div>
+            <h1 data-i18n="wallet.title">Carteira</h1>
+            <p>Gerencie seus ativos e acompanhe o desempenho</p>
+          </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <section class="wallet-summary">
+          <div class="wallet-summary-card accent">
+            <span class="wsc-label"><i class="ph-light ph-wallet"></i> <span data-i18n="wallet.total">Saldo Total</span></span>
+            <strong class="wsc-value" id="walletTotalBig">US$ 0,00</strong>
+          </div>
+          <div class="wallet-summary-card">
+            <span class="wsc-label"><i class="ph-light ph-coins"></i> <span data-i18n="wallet.invested">Investido</span></span>
+            <strong class="wsc-value" id="walletInvested">--</strong>
+          </div>
+          <div class="wallet-summary-card">
+            <span class="wsc-label"><i class="ph-light ph-chart-line-up"></i> <span data-i18n="wallet.pnl">Lucro / Prejuízo</span></span>
+            <strong class="wsc-value" id="walletPnl">--</strong>
+          </div>
+          <div class="wallet-summary-card">
+            <span class="wsc-label"><i class="ph-light ph-hash"></i> <span data-i18n="wallet.assets">Ativos</span></span>
+            <strong class="wsc-value" id="walletCount">0</strong>
+          </div>
+        </section>
+
+        <!-- Add Asset Form -->
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="wallet.addAsset">Adicionar ativo</h2>
+              <p>Selecione a moeda, quantidade e preço de compra (por unidade)</p>
+            </div>
+          </div>
+          <form class="wallet-add-form" id="walletForm">
+            <div class="wallet-form-row">
+              <div class="wallet-coin-picker">
+                <label class="input-group">
+                  <span data-i18n="wallet.coin">Moeda</span>
+                  <div class="coin-search-wrapper">
+                    <i class="ph-light ph-magnifying-glass coin-search-icon"></i>
+                    <input type="text" id="walletCoinSearch" class="coin-search-input" placeholder="Buscar moeda..." autocomplete="off" />
+                    <input type="hidden" id="walletCoin" required />
+                  </div>
+                  <div class="coin-dropdown" id="walletCoinDropdown" hidden>
+                    <ul class="coin-dropdown-list" id="walletCoinList"></ul>
+                  </div>
+                </label>
+              </div>
+              <label class="input-group">
+                <span data-i18n="wallet.quantity">Quantidade</span>
+                <input id="walletAmount" type="number" min="0" step="any" placeholder="Ex: 0.5" required />
+              </label>
+              <label class="input-group">
+                <span data-i18n="wallet.buyPrice">Preço unitário de compra</span>
+                <input id="walletBuyPrice" type="number" min="0" step="any" placeholder="Ex: 95000" />
+              </label>
+              <button class="ghost-button wallet-add-btn" type="submit">
+                <i class="ph-light ph-plus-circle"></i><span>Adicionar</span>
               </button>
             </div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Preferências</h2>
-                <p>Otimize a experiência</p>
-              </div>
+            <div class="wallet-form-preview" id="walletFormPreview" hidden>
+              <span id="walletPreviewText"></span>
             </div>
-            <div class="settings-row">
-              <span>Animações reduzidas</span>
-              <label class="switch">
-                <input type="checkbox" id="reducedMotionToggle" />
-                <span class="slider"></span>
-              </label>
-            </div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Zona perigosa</h2>
-                <p>Limpe todos os dados locais</p>
-              </div>
-            </div>
-            <button class="danger-button" id="resetButton" type="button">Resetar dados</button>
-          </section>
+          </form>
         </section>
-      </main>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="app.js"></script>
-  </body>
+        <!-- Portfolio Chart + List -->
+        <section class="panel" id="walletPortfolioPanel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="wallet.yourAssets">Seus ativos</h2>
+              <p>Clique em um ativo para editar ou remover</p>
+            </div>
+            <div class="wallet-header-actions">
+              <div class="chip wallet-total-chip" id="walletTotal">US$ 0,00</div>
+              <select class="settings-select wallet-sort-select" id="walletSort">
+                <option value="value-desc">Maior valor</option>
+                <option value="value-asc">Menor valor</option>
+                <option value="pnl-desc">Melhor P&L</option>
+                <option value="pnl-asc">Pior P&L</option>
+                <option value="name-asc">A → Z</option>
+              </select>
+            </div>
+          </div>
+          <div class="wallet-portfolio-layout">
+            <div class="wallet-chart-container">
+              <div class="wallet-chart"><canvas id="walletChart" height="220"></canvas></div>
+              <div class="wallet-chart-legend" id="walletChartLegend"></div>
+            </div>
+            <ul class="wallet-list" id="walletList">
+              <li class="wallet-empty">
+                <i class="ph-light ph-wallet" style="font-size:2.5rem;opacity:0.3"></i>
+                <span>Nenhum ativo adicionado ainda.</span>
+                <span class="wallet-empty-hint">Use o formulário acima para adicionar sua primeira moeda.</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Edit Modal -->
+        <div class="wallet-modal-overlay" id="walletModal">
+          <div class="wallet-modal">
+            <div class="wallet-modal-header">
+              <div class="wallet-modal-coin" id="walletModalCoin"></div>
+              <button class="wallet-modal-close" id="walletModalClose"><i class="ph-light ph-x"></i></button>
+            </div>
+            <form class="wallet-modal-form" id="walletEditForm">
+              <label class="input-group">
+                <span>Quantidade</span>
+                <input id="walletEditAmount" type="number" min="0" step="any" required />
+              </label>
+              <label class="input-group">
+                <span>Preço unitário de compra</span>
+                <input id="walletEditBuyPrice" type="number" min="0" step="any" />
+              </label>
+              <div class="wallet-modal-actions">
+                <button class="ghost-button" type="submit"><i class="ph-light ph-check"></i> Salvar</button>
+                <button class="danger-button" type="button" id="walletEditDelete"><i class="ph-light ph-trash"></i> Remover</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== ALERTAS ========== -->
+      <section class="view" id="view-alerts" hidden>
+        <header class="main-header">
+          <div>
+            <h1 data-i18n="alerts.title">Alertas</h1>
+            <p>Crie alertas de preço e seja notificado</p>
+          </div>
+          <div class="header-actions"><button class="ghost-button icon-button" id="enableNotifications" type="button"><i
+                class="ph-light ph-bell-ringing"></i><span>Ativar notificações</span></button></div>
+        </header>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="alerts.new">Novo alerta</h2>
+              <p>Defina a moeda, condição e preço alvo</p>
+            </div>
+          </div>
+          <form class="alert-form" id="alertForm">
+            <label class="input-group"><span data-i18n="wallet.coin">Moeda</span><select id="alertCoin"
+                required></select></label>
+            <label class="input-group"><span data-i18n="alerts.condition">Condição</span><select id="alertCondition">
+                <option value="above" data-i18n="alerts.above">Acima de</option>
+                <option value="below" data-i18n="alerts.below">Abaixo de</option>
+              </select></label>
+            <label class="input-group"><span data-i18n="alerts.target">Preço alvo</span><input id="alertTarget"
+                type="number" min="0" step="any" placeholder="0.00" required /></label>
+            <button class="ghost-button icon-button" type="submit"><i
+                class="ph-light ph-bell-ringing"></i><span>Criar</span></button>
+          </form>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="alerts.active">Alertas ativos</h2>
+              <p>Monitoramento contínuo</p>
+            </div>
+            <button class="ghost-button ghost-button-sm" id="clearTriggeredAlerts" type="button"><i
+                class="ph-light ph-broom"></i> <span data-i18n="alerts.clearTriggered">Limpar disparados</span></button>
+          </div>
+          <ul class="alert-list" id="alertList">
+            <li class="wallet-empty"><i class="ph-light ph-bell-slash"
+                style="font-size:32px;opacity:0.3"></i><span>Nenhum alerta cadastrado.</span></li>
+          </ul>
+        </section>
+      </section>
+
+      <!-- ========== NOTÍCIAS ========== -->
+      <section class="view" id="view-news" hidden>
+        <header class="main-header">
+          <div>
+            <h1 data-i18n="news.title">Notícias</h1>
+            <p>Últimas notícias do mercado cripto</p>
+          </div>
+          <div class="header-actions"><button class="ghost-button icon-button" id="newsRefreshButton"><i
+                class="ph-light ph-arrows-clockwise"></i><span data-i18n="common.refresh">Atualizar</span></button>
+          </div>
+        </header>
+        <section class="news-grid" id="newsGrid">
+          <div class="news-card skeleton-card">
+            <div class="skeleton" style="height:160px;border-radius:12px"></div>
+            <div class="skeleton skeleton-title" style="margin-top:12px"></div>
+            <div class="skeleton" style="height:40px;margin-top:8px"></div>
+          </div>
+          <div class="news-card skeleton-card">
+            <div class="skeleton" style="height:160px;border-radius:12px"></div>
+            <div class="skeleton skeleton-title" style="margin-top:12px"></div>
+            <div class="skeleton" style="height:40px;margin-top:8px"></div>
+          </div>
+          <div class="news-card skeleton-card">
+            <div class="skeleton" style="height:160px;border-radius:12px"></div>
+            <div class="skeleton skeleton-title" style="margin-top:12px"></div>
+            <div class="skeleton" style="height:40px;margin-top:8px"></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ========== CONFIGURAÇÕES ========== -->
+      <section class="view" id="view-settings" hidden>
+        <header class="main-header">
+          <div>
+            <h1 data-i18n="settings.title">Configurações</h1>
+            <p>Preferências de visualização e dados</p>
+          </div>
+        </header>
+
+        <!-- Language -->
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Idioma / Language</h2>
+              <p>Selecione seu idioma preferido</p>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span><i class="ph-light ph-translate"></i> Idioma</span>
+            <div class="language-selector" id="languageSelector">
+              <button class="lang-option active" data-lang="pt-BR">🇧🇷 Português</button>
+              <button class="lang-option" data-lang="en">🇺🇸 English</button>
+              <button class="lang-option" data-lang="es">🇪🇸 Español</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="settings.currency">Moeda padrão</h2>
+              <p>Selecione a moeda de referência</p>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span><i class="ph-light ph-currency-dollar"></i> <span>Moeda</span></span>
+            <button class="currency-toggle" id="currencyToggle" type="button">
+              <span class="toggle-option" data-currency="usd">USD</span>
+              <span class="toggle-option" data-currency="brl">BRL</span>
+              <span class="toggle-option" data-currency="eur">EUR</span>
+            </button>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="settings.theme">Tema</h2>
+              <p>Personalize a aparência</p>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span><i class="ph-light ph-sun-dim"></i> <span data-i18n="settings.theme">Tema</span></span>
+            <button class="currency-toggle" id="themeToggle" type="button">
+              <span class="toggle-option" data-theme="dark" data-i18n="settings.dark">Escuro</span>
+              <span class="toggle-option" data-theme="light" data-i18n="settings.light">Claro</span>
+            </button>
+          </div>
+          <div class="settings-row">
+            <span><i class="ph-light ph-paint-brush"></i> <span data-i18n="settings.accent">Cor de
+                destaque</span></span>
+            <div class="accent-picker" id="accentPicker">
+              <button class="accent-swatch active" data-accent="indigo" style="--swatch:#6366f1"
+                aria-label="Índigo"></button>
+              <button class="accent-swatch" data-accent="emerald" style="--swatch:#10b981"
+                aria-label="Esmeralda"></button>
+              <button class="accent-swatch" data-accent="rose" style="--swatch:#f43f5e" aria-label="Rosa"></button>
+              <button class="accent-swatch" data-accent="amber" style="--swatch:#f59e0b" aria-label="Âmbar"></button>
+              <button class="accent-swatch" data-accent="cyan" style="--swatch:#06b6d4" aria-label="Ciano"></button>
+              <button class="accent-swatch" data-accent="violet" style="--swatch:#8b5cf6" aria-label="Violeta"></button>
+            </div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="settings.autoRefresh">Atualização automática</h2>
+              <p>Configure o intervalo de refresh</p>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span><i class="ph-light ph-clock-clockwise"></i> <span
+                data-i18n="settings.autoRefresh">Auto-refresh</span></span>
+            <label class="switch"><input type="checkbox" id="autoRefreshToggle" /><span class="slider"></span></label>
+          </div>
+          <div class="settings-row" id="refreshIntervalRow" hidden>
+            <span data-i18n="settings.interval">Intervalo</span>
+            <select id="refreshInterval" class="settings-select">
+              <option value="30">30s</option>
+              <option value="60" selected>60s</option>
+              <option value="120">2 min</option>
+              <option value="300">5 min</option>
+            </select>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Preferências</h2>
+              <p>Otimize a experiência</p>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span><i class="ph-light ph-film-strip"></i> <span data-i18n="settings.reducedMotion">Animações
+                reduzidas</span></span>
+            <label class="switch"><input type="checkbox" id="reducedMotionToggle" /><span class="slider"></span></label>
+          </div>
+          <div class="settings-row">
+            <span><i class="ph-light ph-eye-slash"></i> <span data-i18n="settings.discreet">Modo discreto</span></span>
+            <label class="switch"><input type="checkbox" id="discreetToggle" /><span class="slider"></span></label>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Exportar / Importar</h2>
+              <p>Backup dos seus dados</p>
+            </div>
+          </div>
+          <div class="export-actions">
+            <button class="ghost-button icon-button" id="exportDataButton" type="button"><i
+                class="ph-light ph-download-simple"></i><span data-i18n="settings.export">Exportar JSON</span></button>
+            <label class="ghost-button icon-button import-label"><i class="ph-light ph-upload-simple"></i><span
+                data-i18n="settings.import">Importar JSON</span><input type="file" id="importDataInput" accept=".json"
+                hidden /></label>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Zona perigosa</h2>
+              <p>Ações irreversíveis</p>
+            </div>
+          </div>
+          <div class="danger-actions">
+            <button class="danger-button" id="resetButton" type="button"><i class="ph-light ph-trash"></i> <span
+                data-i18n="settings.reset">Resetar todos os dados</span></button>
+            <p class="danger-hint">Carteira, alertas e configurações serão apagados permanentemente.</p>
+          </div>
+        </section>
+        <section class="panel settings-about">
+          <div class="about-row"><span class="about-label">Stack</span><span>TypeScript + Vite</span></div>
+          <div class="about-row"><span class="about-label">Segurança</span><span>AES-256-GCM</span></div>
+          <div class="about-row"><span class="about-label">API</span><span>CoinGecko v3</span></div>
+          <div class="about-row"><span class="about-label">Autor</span><span>Gustavo Menani</span></div>
+        </section>
+      </section>
+      <footer class="app-footer">
+        <p>CryptoDash — Feito por <a href="https://github.com/gustavomenani" target="_blank">Gustavo Menani</a> · Dados
+          por <a href="https://www.coingecko.com" target="_blank">CoinGecko API</a></p>
+      </footer>
+    </main>
+  </div>
+  <script type="module" src="/src/app.ts"></script>
+</body>
+
 </html>
