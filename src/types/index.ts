@@ -216,7 +216,7 @@ export interface TranslationKeys {
   'wallet.title': string;
   'wallet.total': string;
   'wallet.assets': string;
-  'wallet.best': string;
+  'wallet.invested': string;
   'wallet.pnl': string;
   'wallet.addAsset': string;
   'wallet.coin': string;
@@ -282,20 +282,4 @@ export interface SecureStorageData {
   timestamp: number;
 }
 
-// ============================================
-// Supabase Types
-// ============================================
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SyncData {
-  user_id: string;
-  encrypted_data: string;
-  last_sync: string;
-  device_id: string;
-}

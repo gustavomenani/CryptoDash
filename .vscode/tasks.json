@@ -2,56 +2,18 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Build CryptoDash",
-			"type": "shell",
-			"command": "npx vite build",
-			"group": "build"
-		},
-		{
-			"label": "Final Validation Build",
+			"label": "Build",
 			"type": "shell",
 			"command": "npx tsc --noEmit && npx vite build",
-			"group": "build"
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
 		},
 		{
 			"label": "Type Check",
 			"type": "shell",
-			"command": "npx tsc --noEmit && echo BUILD_OK || echo BUILD_FAIL"
-		},
-		{
-			"label": "Vite Build",
-			"type": "shell",
-			"command": "npx vite build"
-		},
-		{
-			"label": "Full Build",
-			"type": "shell",
-			"command": "npx tsc --noEmit && npx vite build"
-		},
-		{
-			"label": "Clean Build",
-			"type": "shell",
-			"command": "npx tsc --noEmit && npx vite build"
-		},
-		{
-			"label": "Vite Build Clean",
-			"type": "shell",
-			"command": "npx vite build"
-		},
-		{
-			"label": "Full Build",
-			"type": "shell",
-			"command": "npx tsc --noEmit && npx vite build"
-		},
-		{
-			"label": "Clean Full Build",
-			"type": "shell",
-			"command": "if (Test-Path dist) { Remove-Item -Recurse -Force dist }; npx tsc --noEmit; npx vite build"
-		},
-		{
-			"label": "Test News API",
-			"type": "shell",
-			"command": "node _test_news.mjs"
+			"command": "npx tsc --noEmit"
 		},
 		{
 			"label": "Start Server",
@@ -59,29 +21,14 @@
 			"command": "node server.js"
 		},
 		{
-			"label": "Test Proxy",
+			"label": "Dev",
 			"type": "shell",
-			"command": "node _test_proxy.mjs"
+			"command": "npx vite"
 		},
 		{
-			"label": "Build Check",
+			"label": "Test",
 			"type": "shell",
-			"command": "npx tsc --noEmit && npx vite build"
-		},
-		{
-			"label": "Test News",
-			"type": "shell",
-			"command": "node _tst.mjs"
-		},
-		{
-			"label": "Test News Lang",
-			"type": "shell",
-			"command": "node _tst.mjs"
-		},
-		{
-			"label": "Final Build",
-			"type": "shell",
-			"command": "npx tsc --noEmit && npx vite build"
+			"command": "npx jest"
 		}
 	]
 }

@@ -5,7 +5,7 @@
 ![Vite](https://img.shields.io/badge/Vite-7.x-646cff)
 ![Tests](https://img.shields.io/badge/Tests-Jest-c21325)
 
-> Dashboard de criptomoedas em tempo real com criptografia ponta a ponta, sincronização em nuvem e suporte offline.
+> Dashboard de criptomoedas em tempo real com criptografia local, PWA offline e interface multilíngue.
 
 ---
 
@@ -16,9 +16,9 @@
 | **Dashboard** | Cards com sparklines, Fear & Greed Index, estatísticas globais do mercado |
 | **Mercado** | Tabela paginada com busca, ordenação e detalhes por moeda |
 | **Conversor** | Conversão entre 8+ criptos e 3 moedas fiduciárias (USD, BRL, EUR) |
-| **Carteira** | Portfólio pessoal com P&L e gráfico de alocação |
+| **Carteira** | Portfólio pessoal com P&L, busca de moedas, edição de ativos e gráfico de alocação |
 | **Alertas** | Notificações de preço com push do navegador |
-| **Notícias** | Feed de notícias cripto atualizado automaticamente |
+| **Notícias** | Feed de notícias cripto atualizado automaticamente (CryptoCompare) |
 | **Configurações** | Tema claro/escuro, 6 cores de destaque, idioma, auto-refresh, export/import |
 
 ---
@@ -30,8 +30,8 @@
 | Linguagem | TypeScript (strict) |
 | Build | Vite — HMR, code-splitting, tree-shaking |
 | Gráficos | Chart.js com sparklines customizadas |
-| Segurança | AES-256-GCM — chave derivada via PBKDF2 + fingerprint |
-| Persistência | localStorage criptografado + Supabase (opcional) |
+| Segurança | AES-256-CBC — chave derivada via PBKDF2 + fingerprint do navegador |
+| Persistência | localStorage criptografado |
 | Testes | Jest + ts-jest + jsdom |
 | PWA | Service Worker, manifest, funciona 100% offline |
 | i18n | Português · English · Español (detecção automática) |
@@ -52,14 +52,12 @@ src/
 │   ├── dashboard.ts        # Cards, gráficos, Fear & Greed, stats
 │   ├── market.ts           # Tabela de mercado, sparklines, coin detail
 │   ├── news.ts             # Feed de notícias (CryptoCompare API)
-│   ├── settings.ts         # Tema, cloud sync, favoritos, event listeners
+│   ├── settings.ts         # Tema, favoritos, preferências
 │   └── wallet.ts           # Carteira / portfólio
 ├── utils/
-│   ├── encryption.ts       # Serviço de criptografia AES-256-GCM
+│   ├── encryption.ts       # Serviço de criptografia AES-256
 │   ├── helpers.ts          # Formatadores, toast, sanitização
 │   └── secureStorage.ts    # Wrapper criptografado do localStorage
-├── services/
-│   └── supabase.ts         # Sincronização em nuvem (opcional)
 ├── i18n/
 │   ├── index.ts            # Motor de tradução
 │   └── translations/       # pt-BR, en, es
@@ -98,28 +96,11 @@ npm run dev
 
 ---
 
-## Sincronização em Nuvem (opcional)
-
-O app funciona 100% local, mas caso queira sincronizar entre dispositivos:
-
-1. Crie um projeto no [Supabase](https://supabase.com)
-2. Configure as variáveis em `.env.local`:
-   ```
-   VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-   VITE_SUPABASE_ANON_KEY=sua-chave-anon
-   ```
-3. Execute o SQL de setup descrito em [DEPLOY.md](./DEPLOY.md)
-
-Os dados são **criptografados localmente antes do upload** — o servidor nunca tem acesso ao conteúdo em texto plano.
-
----
-
 ## Segurança
 
-- Todos os dados sensíveis (carteira, alertas, favoritos) são criptografados com **AES-256-GCM**
+- Todos os dados sensíveis (carteira, alertas, favoritos) são criptografados com **AES-256-CBC**
 - Chave de criptografia derivada com PBKDF2 + fingerprint do navegador
-- Dados nunca armazenados em texto plano, nem local nem na nuvem
-- Row Level Security (RLS) no Supabase garante isolamento entre usuários
+- Dados nunca armazenados em texto plano
 
 ---
 
@@ -139,4 +120,4 @@ Consulte [DEPLOY.md](./DEPLOY.md) para instruções detalhadas de deploy em Verc
 
 ## Licença
 
-MIT © 2025 Gustavo Menani
+MIT © 2025–2026 Gustavo Menani

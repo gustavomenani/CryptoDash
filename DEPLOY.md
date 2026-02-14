@@ -36,34 +36,6 @@ npm run serve          # servidor Express (porta 3000)
 
 ---
 
-## Variáveis de Ambiente (opcional)
-
-Para ativar a sincronização em nuvem com Supabase, crie `.env.local`:
-
-```
-VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua-chave-anon
-```
-
-E execute o SQL no Editor SQL do Supabase:
-
-```sql
-CREATE TABLE user_data (
-  user_id UUID PRIMARY KEY REFERENCES auth.users(id),
-  encrypted_data TEXT NOT NULL,
-  device_id TEXT,
-  last_sync TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-ALTER TABLE user_data ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can only access their own data"
-  ON user_data FOR ALL
-  USING (auth.uid() = user_id);
-```
-
----
-
 ## Deploy — Vercel
 
 ```bash
@@ -98,7 +70,6 @@ docker run -p 3000:3000 cryptodash
 
 | Problema | Solução |
 |----------|---------|
-| "Supabase not configured" | Esperado — a sincronização em nuvem é opcional |
 | "All proxies failed" | Verifique conexão; o app usa dados mock como fallback |
 | Erro de build TypeScript | `rm -rf node_modules dist && npm install && npm run build` |
 
@@ -106,4 +77,4 @@ docker run -p 3000:3000 cryptodash
 
 ## Licença
 
-MIT © 2025 Gustavo Menani
+MIT © 2025–2026 Gustavo Menani
